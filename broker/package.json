@@ -1,0 +1,38 @@
+{
+  "name": "adb-broker",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "npm run serve",
+    "build": "webpack --progress --config webpack.config.js",
+    "ts-build": "npm run build-ts && npm run tslint",
+    "serve": "node dist/server.js",
+    "production-serve": "env NODE_ENV=production node dist/server.js",
+    "watch-node": "nodemon dist/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "test": "jest --forceExit --coverage --verbose",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "debug": "npm run build && npm run watch-debug",
+    "serve-debug": "nodemon --inspect dist/server.js",
+    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
+  },
+  "dependencies": {
+    "log4js": "^3.0.3",
+    "mkdirp": "^0.5.1",
+    "node-forge": "^0.7.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.1",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node-forge": "^0.7.10",
+    "concurrently": "^3.5.1",
+    "jest": "^22.1.4",
+    "tslint": "^5.9.1",
+    "ts-jest": "^22.0.3",
+    "ts-loader": "^4.4.2",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "typescript": "^2.6.2"
+  }
+}
