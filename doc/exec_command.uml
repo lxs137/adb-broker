@@ -1,0 +1,40 @@
+@startuml
+note over AdbServer
+local-id
+end note
+
+Android <- AdbServer: OPEN(local-id, 0, "destination")
+
+note left AdbServer
+destination:
+    tcp:<host>:<port>
+    udp:<host>:<port>
+    local-dgram:<identifier>
+    local-stream:<identifier>
+    shell:<command>
+    upload
+    fs-bridge
+end note
+
+note over Android
+remote-id
+end note
+
+Android -> AdbServer: READY(local-id, remote-id, "")
+|||
+Android -> AdbServer: WRITE(0, remote-id, "data")
+Android <- AdbServer: READY(local-id, remote-id, "")
+...Many Times...
+
+note right Android
+If "data" is large, 
+this WRITE-READY msg
+will be sent many times 
+until "data" is sent over 
+end note
+
+Android -> AdbServer: CLOSE(local-id, remote-id, "")
+note over Android
+Device will ignore received msgs
+end note
+@enduml

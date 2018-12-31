@@ -1,0 +1,42 @@
+@startuml
+box "AdbHost" #LightBlue
+	participant O_thread
+	participant I_thread
+end box
+participant Android
+
+O_thread -> Android : SYNC(1, seq)
+
+note right Android
+Android will store received "seq" 
+when create a connection,
+but this "seq" will share between multi connection.
+When Android receive a SYNC msg, 
+it will response a SYNC msg with its stored "seq".
+So if multi AdbHost connect to Android, 
+this "seq" will not match,
+this is why AdbHost could become "Offline"  
+end note
+
+note over O_thread
+AdbHost will share "seq" 
+between O_thread and I_thread
+end note
+
+Android -> I_thread : SYNC(1, _seq)
+
+note over I_thread
+If "_seq" match "seq", 
+AdbHost can send 
+command to Android.
+end note
+
+I_thread -> Android: Command
+
+note over I_thread
+If "_seq" not match "seq",
+Adb Host become offline
+end note
+
+I_thread -> Android: SYNC(0, 0)
+@enduml

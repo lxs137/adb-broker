@@ -1,0 +1,26 @@
+@startuml
+Android <- AdbServer: CONNECT(version, maxdata, info)
+note right
+info = "<type>:<serial>:<banner>"
+type = "bootloader" | "device" | "host" 
+serial = uniqueID | null 
+banner = otherProp
+end note
+Android -> AdbServer: AUTH(TOKEN(1), 0, RandomToken)
+
+Android <- AdbServer: AUTH(SIGNATURE(2), 0, Sign)
+note right: Sign = SignWithPrivateKey(RandomToken)
+
+== Sign Success by Android ==
+Android -> AdbServer: CONNECT(version, maxdata, system-info)
+
+== Sign Failed by Android ==
+Android -> AdbServer: AUTH(TOKEN(1), 0, NewRandomToken)
+Android <- AdbServer: AUTH(SIGNATURE(2), 0, NewSign)
+note right: NewSign = SignWithDifferentPrivateKey(RandomToken)
+
+== AdbServer's All PrivateKey Sign Failed ==
+Android <- AdbServer: AUTH(SAPUBLICKEY(3), 0, PublicKey)
+note over Android: Trust PublicKey
+Android -> AdbServer: CONNECT(version, maxdata, system-info)
+@enduml

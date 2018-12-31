@@ -1,0 +1,53 @@
+@startuml
+participant Client
+box "AdbServer" #LightBlue
+    participant MainThread
+    participant TransportWriteThread
+    participant TransportReadThread
+end box
+participant Android
+
+
+Client -> MainThread: adb connect <serial>
+note over MainThread
+services.cpp: 
+    create_service_thread()
+    adb_socketpair: 
+       Client <-> LocalService
+services.cpp:
+    connect_device(<serial>): remote_fd
+transport.cpp:
+    register_socket_transport(remote_fd):
+        t = new atransport()
+        t->sfd = remote_fd
+        adb_socketpair:
+            t->fd, t->transport_socket
+msg:
+    t->fd -> 
+    t->transport_socket -> 
+    adb.cpp: handle_packet
+msg:
+    transport.cpp: send_packet() ->
+    t->transport_socket ->
+    t->fd ->
+    write_transport_thread
+   
+end note
+
+TransportReadThread -> MainThread: SYNC(1, token)
+MainThread -> TransportWriteThread: SYNC(1, token)
+note over TransportWriteThread: active=1
+MainThread -> TransportWriteThread: CNXN("host::features=shell...")
+TransportWriteThread -> Android: CNXN("host::features=shell...")
+TransportReadThread <- Android: CNXN("<type>::<device-info>")
+TransportReadThread -> MainThread: CNXN("<type>::<device-info>")
+note over MainThread
+    if t->state!=offline:
+        t->state=offline
+    switch <type>:
+        device: t->state=device
+        bootloader: t->state=bootloader
+        ...  
+    
+end note
+@enduml
