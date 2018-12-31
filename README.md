@@ -8,7 +8,7 @@
 
 There are three components in ADB: Client, AdbServer, Adb Daemon. Client and AdbServer always run on your PC, Adb Daemon (adbd) run on your Android device.
 
-![](https://raw.githubusercontent.com/lxs137/adb-broker/master/doc/architecture.png)
+![](https://raw.githubusercontent.com/lxs137/adb-broker/master/doc/architecture.jpg)
 
 #### Establish Connection
 
